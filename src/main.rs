@@ -1,21 +1,16 @@
-use std::io;
 use std::fs::File;
 use std::path::Path;
 mod room;
+mod console;
+mod town;
+use console::get_input;
 static mut ROOM_NUMBER: i32 = 1;
 static mut INV_ITEMS: i32 = 0;
-pub fn get_input(prompt: &str) -> String{
-    println!("{}",prompt);
-    let mut input = String::new();
-    match io::stdin().read_line(&mut input) {
-        Ok(_goes_into_input_above) => {},
-        Err(_no_updates_is_fine) => {},
-    }
-    input.trim().to_string()
-}
+
 fn main() {
     let mut taken_items: Vec<String> = vec![String::from("Bannana Cake")];
     loop {
+        // Every loop is 1 second
         let cmd: String = get_input(">");
         if cmd == "exit" {
             std::process::exit(1);
@@ -79,6 +74,27 @@ fn main() {
             }
         }
         }
+        if cmd == "help" {
+            println!("Commands:");
+            println!("eat : Eat item");
+            println!("taken : Print Taken Items");
+            println!("take : Take Item from current room");
+            println!("items : Print Items in room");
+            println!("talk : Talk to someone");
+            println!("people : Get List of people in town");
+        }
+        if cmd == "people" {
+            town::print_people();
+        }
+        if cmd == "talk" {
+            let person = get_input("Enter person number to talk to:");
+            if person == "1" {
+                println!("Talking to bob...");
+                town::talk_to_bob();
+            }
+        }
+     
+    
 
     }
 }
