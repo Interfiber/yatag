@@ -1,0 +1,7 @@
+[package]
+name = "yatag"
+version = "0.1.0"
+authors = ["Interfiber"]
+edition = "2018"
+
+[dependencies]
