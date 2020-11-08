@@ -9,14 +9,20 @@ static mut INV_ITEMS: i32 = 0;
 
 fn main() {
     let mut taken_items: Vec<String> = vec![String::from("Bannana Cake")];
-    // Does bob need to deliver cheese?
     loop {
+        // Does bob need to deliver cheese?
         if Path::new(&format!("{}/.yatag-bob-will-deliver-cheese", std::env::var("HOME").unwrap())).exists(){
             println!("Alert: Bob Delivered Cheese. Check for it using 'taken'");
             taken_items.push(String::from("Cheese"));
             std::fs::remove_file(&format!("{}/.yatag-bob-will-deliver-cheese", std::env::var("HOME").unwrap())).expect("Failed to remove cache!");
         }
-        // Every loop is 1 second
+        // Does John need to deliver a computer?
+        if Path::new(&format!("{}/.yatag-john-computer", std::env::var("HOME").unwrap())).exists(){
+            println!("Alert: John Delivered a Computer. Check for it using 'taken'");
+            taken_items.push(String::from("Linux Computer"));
+            std::fs::remove_file(&format!("{}/.yatag-john-computer", std::env::var("HOME").unwrap())).expect("Failed to delete cache");
+        }
+            // Every loop is 1 second
         let cmd: String = get_input(">");
         if cmd == "exit" {
             std::process::exit(1);
@@ -77,6 +83,11 @@ fn main() {
                 if item_name == "Cheese" {
                     println!("You ate cheese. Now you have bad breath");
                 }
+                if item_name == "Linux Computer" {
+                    println!("You ate a Linux Computer. Thats bad. Never do that again");
+                    println!("You Died!");
+                    std::process::exit(1);
+                }
                 // Remove item from inventory
                 taken_items.remove(item.parse::<i32>().unwrap() as usize - 1);
         }
@@ -89,6 +100,64 @@ fn main() {
             println!("items : Print Items in room");
             println!("talk : Talk to someone");
             println!("people : Get List of people in town");
+            println!("use : Use a object you have");
+        }
+        else if cmd == "use" {
+            let item = get_input("Enter the object number you wish to use:");
+            let item_name = &taken_items[item.parse::<i32>().unwrap() as usize - 1];
+            if item_name == "Linux Computer" {
+                println!("...");
+                std::thread::sleep_ms(60);
+                println!("Booting Shell...");
+                loop {
+                    let linux_cmd = get_input(">>");
+                    if linux_cmd == "ls" {
+                        println!("LS : LIST FILES");
+                        println!("FILES:");
+                        println!("  [1]: Desktop");
+                        std::thread::sleep_ms(60);
+                        println!("  [2]: Photos");
+                        std::thread::sleep_ms(60);
+                        println!("  [3]: Documents");
+                    }
+                    else if linux_cmd == "ls /" {
+                        println!("LS : LIST FILES");
+                        println!("FILES: ");
+                        println!("  [4]: /bin");
+                        std::thread::sleep_ms(60);
+                        println!("  [5]: /root");
+                        std::thread::sleep_ms(60);
+                        println!("  [6]: /home");
+                        std::thread::sleep_ms(60);
+                    }
+                    else if linux_cmd == "pwd" {
+                        println!("PWD : Print Working Dir");
+                        std::thread::sleep_ms(100);
+                        println!("/home/JOHN");
+                    }else if linux_cmd == "sudo rm -rf /"{
+                        println!("YSH: TRYING TO DELETE ROOT DRIVE WILL BRICK COMPUTER");
+                        let files = vec!["/bin/ysh", "/bin/rm", "/bin/cool", "/bin/bin.bin", "/bin/noooo", "/bin/jhon-prank", "/bin/amazing", "/bin/tar", "/bin/bin.bin.bin", "/bin/ohhhhh", "/bin/bye", "/bin/if", "/bin/cool", "/bin/coool!", "/bin/good", "/bin/utils", "/bin/pack", "/bin/pasta"];
+                        let root_files = vec!["/root/Audio", "/root/.bashrc", "/root/Desktop", "/root/bin/chroot"];
+                        let home_files = vec!["/home/john", "/home/john/.bashrc", "/home/john/.yshrc", "/home/john/bin/johnspell"];
+                        for file in files {
+                            println!("Deleting {}...", file);
+                        }
+                        for file in root_files {
+                            println!("Deleting {}...", file);
+                        }
+                        for file in home_files {
+                            println!("Deleting {}...", file);
+                        }
+                        // Your bricked the computer
+                        taken_items.remove(item.parse::<i32>().unwrap() as usize - 1);
+                        taken_items.push(String::from("Brick"));
+                        println!("ERROR! COULD NOT FIND USER!");
+                        break;
+                    }else {
+                        println!("YSH: NO SUCH COMMAND CALLED {}", linux_cmd);
+                    }
+                }
+            }
         }
         else if cmd == "people" {
             town::print_people();
